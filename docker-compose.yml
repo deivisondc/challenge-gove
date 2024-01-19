@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+    laravel:
+        container_name: gove-api
+        image: gove-api
+        build: ./api
+        ports:
+            - "8000:8000"
+        env_file:
+            - ./api/.env
+        depends_on:
+            - db
+
+    db:
+        container_name: db
+        image: postgres:16
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
+        volumes:
+            - dbdata:/var/lib/postgresql/data
+
+    # app:
+    #     container_name: gove-app
+    #     image: gove-app
+    #     build:
+    #         context: ./app
+    #         dockerfile: Dockerfile
+    #     volumes:
+    #         - ./app:/app
+    #         - /app/node_modules
+    #         - /app/.next
+    #     ports:
+    #         - "3000:3000"
+
+volumes:
+    dbdata: {}
