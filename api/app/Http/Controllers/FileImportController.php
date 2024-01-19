@@ -12,9 +12,19 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FileImportController extends Controller
 {
-    public function import()
+    public function import(Request $request)
     {
-        $filename = 'Teste.xlsx';
+        // Validate the uploaded file
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        // Get the uploaded file
+        $file = $request->file('file');
+        $filename = $request->file('file')->getClientOriginalName();
+
+        # Local (public)
+        // $filename = 'Teste.xlsx';
 
         $fileImport = new FileImport();
         $fileImport->filename = $filename;
@@ -22,7 +32,7 @@ class FileImportController extends Controller
 
         $fileImport->save();
 
-        Excel::import(new ContactImport($fileImport), $filename);
+        Excel::import(new ContactImport($fileImport), $file);
 
         return response()->json([
             'result' => 200
