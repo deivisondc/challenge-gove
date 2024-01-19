@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FileImportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
@@ -19,8 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::get('/contacts', [ContactController::class, 'index']);
 Route::post('/contacts', [ContactController::class, 'store']);
 Route::get('/contacts/{contact}', [ContactController::class, 'show']);
 Route::put('/contacts{contact}', [ContactController::class, 'update']);
 Route::delete('/contacts/{contact}', [ContactController::class, 'destroy']);
+
+Route::get('/file/import', [FileImportController::class, 'import']);
