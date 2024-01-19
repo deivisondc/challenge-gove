@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedInteger('file_import_id');
             $table->date('scheduled_for');
             $table->string('status');
-            $table->timestamps();
 
             $table->foreign('contact_id')->references('id')->on('contacts');
             $table->foreign('file_import_id')->references('id')->on('file_imports');

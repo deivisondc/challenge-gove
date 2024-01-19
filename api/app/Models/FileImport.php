@@ -10,6 +10,8 @@ class FileImport extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = ["filename", "status"];
 
     public function fileImportError(): HasMany

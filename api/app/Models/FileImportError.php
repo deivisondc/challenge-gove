@@ -10,6 +10,8 @@ class FileImportError extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = ["error"];
 
     public function fileImport(): BelongsTo

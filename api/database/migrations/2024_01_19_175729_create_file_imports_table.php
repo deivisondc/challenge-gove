@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('filename');
             $table->string('status');
-            $table->timestamps();
         });
     }
 

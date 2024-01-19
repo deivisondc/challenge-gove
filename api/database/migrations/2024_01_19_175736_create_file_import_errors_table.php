@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('file_import_id');
             $table->string('error');
-            $table->timestamps();
 
-            $table->foreign('file_import_id')->references('id')->on('file_import');
+            $table->foreign('file_import_id')->references('id')->on('file_imports');
         });
     }
 
