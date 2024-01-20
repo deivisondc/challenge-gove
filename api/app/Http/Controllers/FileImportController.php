@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\FileImportStatus;
 use App\Imports\ContactImport;
+use App\Jobs\UpdateFileImportStatus;
 use App\Models\FileImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -32,10 +33,12 @@ class FileImportController extends Controller
 
         $fileImport->save();
 
-        Excel::import(new ContactImport($fileImport), $file);
+        (new ContactImport($fileImport))->queue($file)->chain([
+            new UpdateFileImportStatus($fileImport),
+        ]);
 
         return response()->json([
-            'result' => 200
+            'fileImportId' => $fileImport->id,
         ]);
     }
 }

@@ -6,11 +6,10 @@ use App\Enums\FileImportCellError;
 use App\Enums\FileImportStatus;
 use App\Models\Contact;
 use App\Models\Notification;
-use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\RemembersChunkOffset;
 use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use App\Enums\NotificationStatus;
 use App\Models\FileImport;
@@ -21,9 +20,9 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\ImportFailed;
 use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 
-class ContactImport extends StringValueBinder implements ToArray, WithHeadingRow, WithChunkReading, ShouldQueue
+class ContactImport extends StringValueBinder implements ToArray, WithHeadingRow, WithChunkReading, ShouldQueue, WithEvents
 {
-    use RemembersChunkOffset;
+    use Importable, RemembersChunkOffset;
 
     public function __construct(
         protected FileImport $fileImport
@@ -73,13 +72,23 @@ class ContactImport extends StringValueBinder implements ToArray, WithHeadingRow
                     $fileImportError->error = 'Line ' . $rowNumber . ': ' . $error;
                     $fileImportError->save();
                 }
-    }
+            }
         }
     }
 
     public function chunkSize(): int
     {
         return 10000;
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            ImportFailed::class => function() {
+                $this->fileImport->status = FileImportStatus::ERROR->name;
+                $this->fileImport->save();
+            },
+        ];
     }
 
     private function validateRowOrFail($row): array {
