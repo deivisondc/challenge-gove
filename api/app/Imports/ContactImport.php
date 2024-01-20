@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use App\Enums\NotificationStatus;
+use App\Jobs\SendNotification;
 use App\Models\FileImport;
 use App\Models\FileImportError;
 use DateTime;
@@ -63,6 +64,9 @@ class ContactImport extends StringValueBinder implements ToArray, WithHeadingRow
                 $notification->scheduled_for = $dateObject->format('Y-m-d');
                 $notification->status = NotificationStatus::IDLE->name;
                 $notification->save();
+
+                $notification->status = NotificationStatus::QUEUED->name;
+                SendNotification::dispatch($notification)->onQueue('notifications');
             } else {
                 $rowNumber = $this->getChunkOffset() + $i;
 
