@@ -10,7 +10,7 @@ class FileImport extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    const UPDATED_AT = null;
 
     protected $fillable = ["filename", "status"];
 
