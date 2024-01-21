@@ -44,6 +44,8 @@ class UpdateFileImportStatus implements ShouldQueue
         }
 
         $this->fileImport->save();
+
+        SendNotification::dispatch()->onQueue('notifications');
     }
 
     private function hasErrors($fileImport): bool
