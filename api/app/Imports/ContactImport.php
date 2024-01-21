@@ -13,7 +13,6 @@ use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use App\Enums\NotificationStatus;
-use App\Jobs\SendNotification;
 use App\Models\FileImport;
 use App\Models\FileImportError;
 use DateTime;
@@ -33,9 +32,12 @@ class ContactImport extends StringValueBinder
 
     public function array(array $rows)
     {
+        if (count($rows) == 0) {
+            $this->setStatusOnFileImport(FileImportStatus::ERROR);
+        }
+
         if ($this->fileImport->status == FileImportStatus::QUEUED->name) {
-            $this->fileImport->status = FileImportStatus::PROCESSING->name;
-            $this->fileImport->save();
+            $this->setStatusOnFileImport(FileImportStatus::PROCESSING);
         }
 
         $savedContacts = [];
@@ -43,21 +45,25 @@ class ContactImport extends StringValueBinder
         for ($i=0; $i < count($rows); $i++) {
             $row = $rows[$i];
 
-            $rowValidationData = $this->validateRowOrFail($row);
+            $rowName = array_key_exists('name', $row) ? $row['name'] : $row[0];
+            $rowContact = array_key_exists('contact', $row) ? $row['contact'] : $row[1];
+            $rowScheduledFor = array_key_exists('scheduled_for', $row) ? $row['scheduled_for'] : $row[2];
+
+            $rowValidationData = $this->validateRowOrFail($rowName, $rowContact, $rowScheduledFor);
 
             if ($rowValidationData['success']) {
-                $contact = $savedContacts[$row['contact']] ?? Contact::where('contact', $row['contact'])->first();
+                $contact = $savedContacts[$rowContact] ?? Contact::where('contact', $rowContact)->first();
 
                 if (!$contact) {
                     $contact = new Contact();
-                    $contact->name = $row['name'];
-                    $contact->contact = $row['contact'];
+                    $contact->name = $rowName;
+                    $contact->contact = $rowContact;
                     $contact->save();
 
                     $savedContacts[$contact->contact] = $contact;
                 }
 
-                $dateString = $row['scheduled_for'];
+                $dateString = $rowScheduledFor;
                 $dateObject = DateTime::createFromFormat('Y-m-d', $dateString);
 
                 $notification = new Notification();
@@ -66,16 +72,13 @@ class ContactImport extends StringValueBinder
                 $notification->scheduled_for = $dateObject->format('Y-m-d');
                 $notification->status = NotificationStatus::IDLE->name;
                 $notification->save();
-
-                $notification->status = NotificationStatus::QUEUED->name;
-                SendNotification::dispatch($notification)->onQueue('notifications');
             } else {
                 $rowNumber = $this->getChunkOffset() + $i;
 
                 foreach ($rowValidationData['errors'] as $error) {
                     $fileImportError = new FileImportError();
                     $fileImportError->fileImport()->associate($this->fileImport);
-                    $fileImportError->error = 'Line ' . $rowNumber . ': ' . $error;
+                    $fileImportError->error = 'Row ' . $rowNumber . ': ' . $error;
                     $fileImportError->save();
                 }
             }
@@ -91,24 +94,28 @@ class ContactImport extends StringValueBinder
     {
         return [
             ImportFailed::class => function() {
-                $this->fileImport->status = FileImportStatus::ERROR->name;
-                $this->fileImport->save();
+                $this->setStatusOnFileImport(FileImportStatus::ERROR);
             },
         ];
     }
 
-    private function validateRowOrFail($row): array {
+    private function setStatusOnFileImport(FileImportStatus $status) {
+        $this->fileImport->status = $status->name;
+        $this->fileImport->save();
+    }
+
+    private function validateRowOrFail($rowName, $rowContact, $rowScheduledFor): array {
         $result = [ 'success' => true ];
 
-        if (empty($row['name'])) {
+        if (empty($rowName)) {
             $result['success'] = false;
             $result['errors'][] = FileImportCellError::MISSING_NAME->value;
         }
-        if (empty($row['contact'])) {
+        if (empty($rowContact)) {
             $result['success'] = false;
             $result['errors'][] = FileImportCellError::MISSING_CONTACT->value;
         }
-        if (empty($row['scheduled_for'])) {
+        if (empty($rowScheduledFor)) {
             $result['success'] = false;
             $result['errors'][] = FileImportCellError::MISSING_DATE->value;
         }
