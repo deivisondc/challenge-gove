@@ -18,9 +18,7 @@ class SendNotification implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(
-        private Notification $notification
-    )
+    public function __construct()
     {
         //
     }
@@ -30,14 +28,33 @@ class SendNotification implements ShouldQueue
      */
     public function handle(NotificationService $notificationService): void
     {
-        try {
-            $notificationService->send($this->notification->contact, 'MOCK MESSAGE');
+        $notifications = Notification::where([
+            ['scheduled_for', '<=', now()->format('Y-m-d')],
+            ['status', '=', NotificationStatus::IDLE->name]
+        ]);
 
-            $this->notification->status = NotificationStatus::SUCCESS->name;
-        } catch (\Exception $e) {
-            $this->notification->status = NotificationStatus::ERROR->name;
+        if (empty($notifications)) {
+            return;
         }
 
-        $this->notification->save();
+        $notifications->update(['status' => NotificationStatus::QUEUED->name]);
+
+        $notifications = Notification::where([
+            ['scheduled_for', '<=', now()->format('Y-m-d')],
+            ['status', '=', NotificationStatus::QUEUED->name]
+        ])->get();
+
+        foreach ($notifications as $notification) {
+            try {
+                $notificationService->send($notification->contact, 'MOCK MESSAGE');
+
+                $notification->status = NotificationStatus::SUCCESS->name;
+            } catch (\Exception $e) {
+                $notification->status(NotificationStatus::ERROR->name);
+            } finally {
+                $notification->save();
+            }
+        }
+
     }
 }
