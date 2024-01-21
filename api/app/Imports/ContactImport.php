@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Notification;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\RemembersChunkOffset;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -21,7 +22,8 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\ImportFailed;
 use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 
-class ContactImport extends StringValueBinder implements ToArray, WithHeadingRow, WithChunkReading, ShouldQueue, WithEvents
+class ContactImport extends StringValueBinder
+    implements ToArray, WithHeadingRow, WithChunkReading, ShouldQueue, WithEvents, SkipsEmptyRows
 {
     use Importable, RemembersChunkOffset;
 
