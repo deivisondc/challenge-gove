@@ -21,7 +21,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\ImportFailed;
 use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
 
-class ContactImport extends StringValueBinder
+class ExcelImport extends StringValueBinder
     implements ToArray, WithHeadingRow, WithChunkReading, ShouldQueue, WithEvents, SkipsEmptyRows
 {
     use Importable, RemembersChunkOffset;
