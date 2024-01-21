@@ -1,9 +1,9 @@
 import { PageTitle } from "@/components/UI/PageTitle";
 
-export default function Home() {
+export default function Files() {
   return (
     <>
-      <PageTitle>Dashboard</PageTitle>
+      <PageTitle>Files</PageTitle>
     </>
   );
-}
+};
