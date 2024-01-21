@@ -3,22 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Enums\FileImportStatus;
-use App\Imports\ContactImport;
+use App\Imports\ExcelImport;
 use App\Jobs\UpdateFileImportStatus;
 use App\Models\FileImport;
+use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use ZipArchive;
-use Maatwebsite\Excel\Facades\Excel;
 
 class FileImportController extends Controller
 {
+    public function index(Request $request)
+    {
+        $pageSize = $request->query("pageSize", 10);
+        $createdAt = $request->query("createdAt");
+        $formattedDate = '';
+
+        if ($createdAt) {
+            $formattedDate = DateTime::createFromFormat('Y-m-d', $createdAt);
+
+            if ($formattedDate == false) {
+                return response()->json([
+                    'error' => 'Invalid value for query param "createdAt"'
+                ]);
+            }
+
+        }
+
+        $fileImports = FileImport::when($formattedDate, function ($query) use ($formattedDate) {
+            $query->whereDate("created_at", $formattedDate);
+        })->paginate($pageSize);
+
+        return response()->json($fileImports);
+    }
+
+    public function show(FileImport $fileImport)
+    {
+        return response()->json($fileImport);
+    }
+
     public function import(Request $request)
     {
         try {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls',
-        ]);
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'error'=> 'Only files with xlsx and xls extensions are acceptable.',
@@ -38,7 +65,7 @@ class FileImportController extends Controller
 
         $fileImport->save();
 
-        (new ContactImport($fileImport))->queue($file)->chain([
+        (new ExcelImport($fileImport))->queue($file)->chain([
             new UpdateFileImportStatus($fileImport),
         ]);
 

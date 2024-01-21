@@ -4,6 +4,8 @@ use App\Http\Controllers\FileImportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FileImportErrorController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,4 +29,8 @@ Route::get('/contacts/{contact}', [ContactController::class, 'show']);
 Route::put('/contacts{contact}', [ContactController::class, 'update']);
 Route::delete('/contacts/{contact}', [ContactController::class, 'destroy']);
 
-Route::post('/file/import', [FileImportController::class, 'import']);
+Route::get('/files', [FileImportController::class, 'index']);
+Route::get('/files/{fileImport}', [FileImportController::class, 'show']);
+Route::get('/files/{fileImport}/errors', [FileImportErrorController::class, 'index']);
+Route::get('/files/{fileImport}/notifications', [NotificationController::class, 'index']);
+Route::post('/files/import', [FileImportController::class, 'import']);
