@@ -14,7 +14,7 @@ class FileImport extends Model
 
     protected $fillable = ["filename", "status"];
 
-    public function fileImportError(): HasMany
+    public function fileImportErrors(): HasMany
     {
         return $this->hasMany(FileImportError::class);
     }

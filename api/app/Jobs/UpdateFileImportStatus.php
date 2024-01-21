@@ -35,7 +35,7 @@ class UpdateFileImportStatus implements ShouldQueue
             return;
         }
 
-        $countFileImportErrors = FileImportError::where("file_import_id", $this->fileImport->id)->count();
+        $countFileImportErrors = $this->fileImport->fileImportErrors->count();
 
         if ($countFileImportErrors > 0) {
             $this->fileImport->status = FileImportStatus::WARNING->name;
