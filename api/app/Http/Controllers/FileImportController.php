@@ -15,10 +15,15 @@ class FileImportController extends Controller
 {
     public function import(Request $request)
     {
-        // Validate the uploaded file
+        try {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error'=> 'Only files with xlsx and xls extensions are acceptable.',
+            ], 400);
+        }
 
         // Get the uploaded file
         $file = $request->file('file');
