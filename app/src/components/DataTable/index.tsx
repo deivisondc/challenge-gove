@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ResponseType } from "@/types/ResponseType";
 import { DataTable } from "./table";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type TableProps<TData, TValue> = {
@@ -14,9 +14,10 @@ type TableProps<TData, TValue> = {
   description?: string
   onRowClick?: (itemId: number) => void
   onRefresh: () => void
+  filterComponent?: ReactNode
 } & ResponseType<TData>
 
-const Table = <TData, TValue>({ title, description, onRefresh, ...props }: TableProps<TData, TValue>) => {
+const Table = <TData, TValue>({ title, description, onRefresh, filterComponent, ...props }: TableProps<TData, TValue>) => {
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   async function handleRefresh() {
@@ -50,6 +51,7 @@ const Table = <TData, TValue>({ title, description, onRefresh, ...props }: Table
         </Button>
       </div>
       <div className="rounded-xl border p-4 w-full overflow-auto">
+        {filterComponent}
         <DataTable {...props} data={props.data} onPageChange={onRefresh} />
       </div>
     </div>
