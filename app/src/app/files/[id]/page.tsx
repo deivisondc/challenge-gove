@@ -1,5 +1,6 @@
 import { PageTitle } from "@/components/PageTitle";
 import { FileImportType } from "@/types/FileImportType";
+import FileImportErrorsTable from "./components/FileImportErrors/FileImportErrorTable";
 import StatusCard from "./components/StatusCard";
 import { format } from "date-fns";
 
@@ -27,6 +28,7 @@ export default async function FileImportDetails({ params }: FileImportDetailsPro
       </div>
 
       <StatusCard status={response.status} />
+      <FileImportErrorsTable fileImportId={params.id} />
     </>
   )
 }
