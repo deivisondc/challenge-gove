@@ -1,4 +1,4 @@
-import { PageTitle } from "@/components/UI/PageTitle";
+import { PageTitle } from "@/components/PageTitle";
 
 export default function Home() {
   return (
