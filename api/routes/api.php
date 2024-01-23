@@ -34,3 +34,7 @@ Route::get('/files/{fileImport}', [FileImportController::class, 'show']);
 Route::get('/files/{fileImport}/errors', [FileImportErrorController::class, 'index']);
 Route::get('/files/{fileImport}/notifications', [NotificationController::class, 'index']);
 Route::post('/files/import', [FileImportController::class, 'import']);
+
+Route::put('/notifications/{notification}/retry', [NotificationController::class, 'retry']);
+Route::put('/notifications/{notification}/update-date', [NotificationController::class, 'updateScheduledFor']);
+Route::put('/notifications/{notification}/cancel', [NotificationController::class, 'cancel']);

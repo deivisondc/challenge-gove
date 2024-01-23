@@ -50,7 +50,7 @@ class SendNotification implements ShouldQueue
 
                 $notification->status = NotificationStatus::SUCCESS->name;
             } catch (\Exception $e) {
-                $notification->status(NotificationStatus::ERROR->name);
+                $notification->status = NotificationStatus::ERROR->name;
             } finally {
                 $notification->save();
             }

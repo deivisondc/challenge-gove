@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationStatus;
 use App\Http\Utils;
+use App\Jobs\UpdateNotification;
 use App\Models\FileImport;
 use App\Models\Notification;
+use DateTime;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -45,5 +48,36 @@ class NotificationController extends Controller
 
         return response()->json($notifications);
     }
+
+    public function retry(Notification $notification)
+    {
+        $notification->status = NotificationStatus::IDLE->name;
+        $notification->save();
+
+        UpdateNotification::dispatch($notification)->onQueue('notifications');
+
+        return response()->json($notification);
+    }
+
+    public function updateScheduledFor(Notification $notification, Request $request)
+    {
+        $scheduled_for = $request->json()->get('scheduled_for');
+        $formattedDate = DateTime::createFromFormat('Y-m-d', $scheduled_for);
+
+        $notification->status = NotificationStatus::IDLE->name;
+        $notification->scheduled_for = $formattedDate->format('Y-m-d');
+        $notification->save();
+
+        UpdateNotification::dispatch($notification)->onQueue('notifications');
+
+        return response()->json($notification);
+    }
+
+    public function cancel(Notification $notification)
+    {
+        $notification->status = NotificationStatus::CANCELED->name;
+        $notification->save();
+
+        return response()->json($notification);
     }
 }
