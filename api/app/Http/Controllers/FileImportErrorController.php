@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Utils;
 use App\Models\FileImport;
 use App\Models\FileImportError;
 use Illuminate\Http\Request;
@@ -13,8 +14,14 @@ class FileImportErrorController extends Controller
     {
         $pageSize = $request->query("pageSize",10);
 
-        return FileImportError::where("file_import_id", $fileImport->id)
-            ->paginate($pageSize);
+        $fileImportErrors = FileImportError::where("file_import_id", $fileImport->id)
+            ->paginate($pageSize)
+            ->toArray();
+
+        $links = Utils::formatPaginationLinks($fileImportErrors['links'], $fileImportErrors['last_page'], $fileImportErrors['current_page']);
+        $fileImportErrors['links'] = $links;
+
+        return response()->json($fileImportErrors);
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\FileImportStatus;
+use App\Http\Utils;
 use App\Imports\ExcelImport;
 use App\Jobs\UpdateFileImportStatus;
 use App\Models\FileImport;
@@ -30,7 +31,13 @@ class FileImportController extends Controller
 
         $fileImports = FileImport::when($formattedDate, function ($query) use ($formattedDate) {
             $query->whereDate("created_at", $formattedDate);
-        })->paginate($pageSize);
+        })
+            ->orderBy('id', 'desc')
+            ->paginate($pageSize)
+            ->toArray();
+
+        $links = Utils::formatPaginationLinks($fileImports['links'], $fileImports['last_page'], $fileImports['current_page']);
+        $fileImports['links'] = $links;
 
         return response()->json($fileImports);
     }
@@ -71,6 +78,6 @@ class FileImportController extends Controller
 
         return response()->json([
             'fileImportId' => $fileImport->id,
-        ]);
+        ], 200);
     }
 }
