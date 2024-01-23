@@ -7,12 +7,14 @@ import { ResponseType } from "@/types/ResponseType";
 
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
+  onRowClick?: (itemId: number) => void
   onPageChange: (page: number) => void
 } & ResponseType<TData>
 
 const DataTable = <TData, TValue>({ 
   data, 
   columns,
+  onRowClick,
   onPageChange,
   ...paginationProps
 }: DataTableProps<TData, TValue>) => {
@@ -48,9 +50,11 @@ const DataTable = <TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} onClick={() => {
+                  onRowClick && onRowClick(Number(row.getValue('id')))
+                }}>
                   {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="cursor-pointer">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

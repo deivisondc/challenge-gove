@@ -10,10 +10,13 @@ import { cn } from "@/lib/utils";
 
 type TableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
+  title?: string
+  description?: string
+  onRowClick?: (itemId: number) => void
   onRefresh: () => void
 } & ResponseType<TData>
 
-const Table = <TData, TValue>({ description, onRefresh, ...props }: TableProps<TData, TValue>) => {
+const Table = <TData, TValue>({ title, description, onRefresh, ...props }: TableProps<TData, TValue>) => {
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   async function handleRefresh() {
@@ -28,8 +31,11 @@ const Table = <TData, TValue>({ description, onRefresh, ...props }: TableProps<T
   return (
     <div className="my-4 ">
       <div className="flex justify-between items-end mb-1">
-        <p className="text-sm text-gray-500">{description}</p>
-        
+        {description ? (
+          <p className="text-sm text-gray-500">{description}</p>
+        ) : (
+          <h2 className="text-xl ml-2 font-bold text-secondary-foreground">{title}</h2>
+        )}
         <Button
           variant="ghost"
           size="sm"

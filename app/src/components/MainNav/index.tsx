@@ -20,7 +20,6 @@ export function MainNav({
   const navLinks: Array<NavLinkType> = [
     { href: '/', label: 'Overview', exact: true },
     { href: '/files', label: 'Files' },
-    // { href: '/notifications', label: 'Notifications' },
   ]
 
   const isActiveLink = (navLink: NavLinkType) => {
