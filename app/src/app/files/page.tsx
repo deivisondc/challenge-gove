@@ -34,7 +34,7 @@ export default function Files() {
       </div>
 
       {response ? (
-          <FileImportsTable {...response} />
+          <FileImportsTable fetchFiles={fetchFiles} {...response} />
       ) : 'Loading'}
 
     </>
