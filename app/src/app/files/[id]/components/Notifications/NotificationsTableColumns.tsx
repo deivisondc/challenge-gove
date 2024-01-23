@@ -4,9 +4,15 @@ import { NotificationsStatusType, NotificationsType } from "@/types/Notification
 import { ClockIcon, SymbolIcon, CheckCircledIcon, CrossCircledIcon, DotsVerticalIcon, DividerHorizontalIcon } from "@radix-ui/react-icons"
 import { ColumnDef } from "@tanstack/react-table"
 
+import { NotificationsTableActions } from "./NotificationsTableActions"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-export const columns: ColumnDef<NotificationsType>[] = [
+type ColumnProps = {
+  fetchNotifications: () => Promise<void>
+}
+
+export const getColumns = ({ fetchNotifications }: ColumnProps): ColumnDef<NotificationsType>[] => [
   {
     id: 'contact.name',
     accessorKey: 'contact.name',
@@ -70,5 +76,24 @@ export const columns: ColumnDef<NotificationsType>[] = [
         {row.getValue<NotificationsStatusType>('scheduled_for')}
       </span>
     )
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const notification = row.original
+      
+      async function onRetry() {
+        await fetch(`http://localhost:8000/api/notifications/${notification.id}/retry`, {
+          method: 'PUT'
+        })
+
+        fetchNotifications()
+      }
+
+      return <NotificationsTableActions notification={notification} onRetry={onRetry} onEdit={fetchNotifications} />
+      // return <Button variant="outline" size="sm">
+      //   <DotsVerticalIcon />
+      // </Button>
+    }
   }
 ]

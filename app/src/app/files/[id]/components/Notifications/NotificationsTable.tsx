@@ -1,7 +1,7 @@
 'use client'
 
 import { Table } from "@/components/DataTable";
-import { columns } from "./NotificationsTableColumns";
+import { getColumns } from "./NotificationsTableColumns";
 import { ResponseType } from "@/types/ResponseType";
 import { NotificationsType } from "@/types/NotificationsType";
 import { useCallback, useEffect, useState } from "react";
@@ -27,6 +27,8 @@ export default function NotificationsTable({ fileImportId }: NotificationTablePr
   useEffect(() => {
     fetchNotifications()
   }, [fetchNotifications])
+
+  const columns = getColumns({ fetchNotifications })
 
   if (!response) {
     return 'Loading'
