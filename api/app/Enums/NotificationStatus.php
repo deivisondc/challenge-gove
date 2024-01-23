@@ -8,4 +8,5 @@ enum NotificationStatus
     case QUEUED;
     case SUCCESS;
     case ERROR;
+    case CANCELED;
 }
