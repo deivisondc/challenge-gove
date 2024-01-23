@@ -17,6 +17,7 @@ use App\Models\FileImport;
 use App\Models\FileImportError;
 use DateTime;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\ImportFailed;
 use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
@@ -42,6 +43,9 @@ class ExcelImport extends StringValueBinder
 
         $savedContacts = [];
 
+        $notificationsToSave = [];
+        $importErrorsToSave = [];
+
         for ($i=0; $i < count($rows); $i++) {
             $row = $rows[$i];
 
@@ -66,23 +70,26 @@ class ExcelImport extends StringValueBinder
                 $dateString = $rowScheduledFor;
                 $dateObject = DateTime::createFromFormat('Y-m-d', $dateString);
 
-                $notification = new Notification();
-                $notification->contact()->associate($contact);
-                $notification->fileImport()->associate($this->fileImport);
-                $notification->scheduled_for = $dateObject->format('Y-m-d');
-                $notification->status = NotificationStatus::IDLE->name;
-                $notification->save();
+                $notificationsToSave[] = [
+                    "contact_id" => $contact->id,
+                    "file_import_id" => $this->fileImport->id,
+                    "scheduled_for" => $dateObject->format('Y-m-d'),
+                    "status" => NotificationStatus::IDLE->name,
+                ];
             } else {
                 $rowNumber = $this->getChunkOffset() + $i;
 
                 foreach ($rowValidationData['errors'] as $error) {
-                    $fileImportError = new FileImportError();
-                    $fileImportError->fileImport()->associate($this->fileImport);
-                    $fileImportError->error = 'Row ' . $rowNumber . ': ' . $error;
-                    $fileImportError->save();
+                    $importErrorsToSave[] = [
+                        "file_import_id" => $this->fileImport->id,
+                        "error" => "Row {$rowNumber}: {$error}"
+                    ];
                 }
             }
         }
+
+        Notification::insert($notificationsToSave);
+        FileImportError::insert($importErrorsToSave);
     }
 
     public function chunkSize(): int
