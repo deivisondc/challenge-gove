@@ -3,7 +3,7 @@
 import { PageTitle } from "@/components/PageTitle";
 import { UploadButton } from "./components/UploadButton";
 import { TemplateFileButton } from "./components/TemplateFileButton";
-import { PageTitle } from "@/components/UI/PageTitle";
+import FileImportsTable from "./components/FileImportsTable";
 import { useCallback, useEffect, useState } from "react";
 import { ResponseType } from "@/types/ResponseType";
 import { FileImportType } from "@/types/FileImportType";
@@ -33,13 +33,10 @@ export default function Files() {
         </div>
       </div>
 
-      <ul>
-        {response && response.data.map(item => (
-          <li key={item.id}>
-            {item.filename}
-          </li>
-        ))}
-      </ul>
+      {response ? (
+          <FileImportsTable {...response} />
+      ) : 'Loading'}
+
     </>
   );
 };
