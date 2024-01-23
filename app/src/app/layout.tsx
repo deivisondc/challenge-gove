@@ -31,7 +31,7 @@ export default function RootLayout({
         </header>
 
         <div className="flex justify-center">
-          <main className="flex flex-col flex-1 px-12 py-8 max-w-[1280px]">
+          <main className="flex flex-col flex-1 px-4 md:px-12 py-8 overflow-auto max-w-[1280px]">
             {children}
           </main>
         </div>
