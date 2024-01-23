@@ -36,7 +36,7 @@ class FileImportController extends Controller
             ->paginate($pageSize)
             ->toArray();
 
-        $links = Utils::formatPaginationLinks($fileImports['links'], $fileImports['last_page'], $fileImports['current_page']);
+        $links = Utils::formatPaginationLinks($fileImports);
         $fileImports['links'] = $links;
 
         return response()->json($fileImports);

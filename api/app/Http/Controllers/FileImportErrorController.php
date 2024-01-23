@@ -18,7 +18,7 @@ class FileImportErrorController extends Controller
             ->paginate($pageSize)
             ->toArray();
 
-        $links = Utils::formatPaginationLinks($fileImportErrors['links'], $fileImportErrors['last_page'], $fileImportErrors['current_page']);
+        $links = Utils::formatPaginationLinks($fileImportErrors);
         $fileImportErrors['links'] = $links;
 
         return response()->json($fileImportErrors);

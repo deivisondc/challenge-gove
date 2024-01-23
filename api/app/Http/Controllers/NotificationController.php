@@ -14,11 +14,18 @@ class NotificationController extends Controller
 {
     public function index(FileImport $fileImport, Request $request)
     {
-        $pageSize = $request->query("pageSize",10);
-        $name = $request->query("name");
-        $contact = $request->query("contact");
-        $scheduledFor = $request->query("scheduledFor");
-        $status = $request->query("status");
+        $notifications = $this->getNotificationsWithQueryParams($fileImport, $request->query->all());
+
+        return response()->json($notifications);
+    }
+
+    private function getNotificationsWithQueryParams(FileImport $fileImport, $queryParams)
+    {
+        $pageSize = $queryParams["pageSize"] ?? 10;
+        $name = $queryParams["name"] ?? null;
+        $contact = $queryParams["contact"] ?? null;
+        $scheduledFor = $queryParams["scheduledFor"] ?? null;
+        $status = $queryParams["status"] ?? null;
 
         $notifications = Notification::with('contact')
             ->where("file_import_id", $fileImport->id)
@@ -35,7 +42,7 @@ class NotificationController extends Controller
                     $query->where("contact", "ilike", "%{$contact}%");
                 });
             })
-            ->when($status && $status != 'ALL', function ($query) use ($status) {
+            ->when($status, function ($query) use ($status) {
                 $query->where("status", $status);
             })
             ->orderBy('id', 'desc')
@@ -43,10 +50,10 @@ class NotificationController extends Controller
             ->paginate($pageSize)
             ->toArray();
 
-        $links = Utils::formatPaginationLinks($notifications['links'], $notifications['last_page'], $notifications['current_page']);
+        $links = Utils::formatPaginationLinks($notifications);
         $notifications['links'] = $links;
 
-        return response()->json($notifications);
+        return $notifications;
     }
 
     public function retry(Notification $notification)

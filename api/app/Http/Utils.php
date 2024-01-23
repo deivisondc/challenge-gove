@@ -4,8 +4,12 @@ namespace App\Http;
 
 class Utils
 {
-    public static function formatPaginationLinks($links, $lastPage, $currentPage)
+    public static function formatPaginationLinks($collection)
     {
+        $links = $collection['links'];
+        $lastPage = $collection['last_page'];
+        $currentPage = $collection['current_page'];
+
         $withoutPreviousAndNext = array_slice($links, 1, -1);
         $emptyLink = [
             "url" => null,
