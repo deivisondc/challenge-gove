@@ -40,21 +40,30 @@ class SendNotification implements ShouldQueue
         $notifications->update(['status' => NotificationStatus::QUEUED->name]);
 
         $notifications = Notification::where([
-            ['scheduled_for', '<=', now()->format('Y-m-d')],
-            ['status', '=', NotificationStatus::QUEUED->name]
-        ])->get();
+                ['scheduled_for', '<=', now()->format('Y-m-d')],
+                ['status', '=', NotificationStatus::QUEUED->name]
+            ])->chunkById(5000, function ($notificationsArray) use ($notificationService) {
+                $notificationsToSave = [];
 
-        foreach ($notifications as $notification) {
-            try {
-                $notificationService->send($notification->contact, 'MOCK MESSAGE');
+                foreach ($notificationsArray as $notification) {
+                    $item = [
+                        "id" => $notification->id,
+                        "contact_id" => $notification->contact_id,
+                        "file_import_id" => $notification->file_import_id,
+                        "scheduled_for" => $notification->scheduled_for,
+                        "status" => NotificationStatus::SUCCESS->name
+                    ];
 
-                $notification->status = NotificationStatus::SUCCESS->name;
-            } catch (\Exception $e) {
-                $notification->status = NotificationStatus::ERROR->name;
-            } finally {
-                $notification->save();
-            }
-        }
-
+                    try {
+                        $notificationService->send($notification->contact, 'MOCK MESSAGE');
+                        $item['status'] = NotificationStatus::SUCCESS->name;
+                    } catch (\Exception $e) {
+                        $item['status'] = NotificationStatus::ERROR->name;
+                    } finally {
+                        $notificationsToSave[] = $item;
+                    }
+                }
+                Notification::upsert($notificationsToSave, ['id'], ['status']);
+            });
     }
 }
