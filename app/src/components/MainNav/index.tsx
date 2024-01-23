@@ -5,17 +5,31 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation";
 
+type NavLinkType = {
+  href: string,
+  label: string,
+  exact?: boolean
+}
+
 export function MainNav({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const pathName = usePathname();
 
-  const navLinks = [
-    { href: '/', label: 'Overview' },
+  const navLinks: Array<NavLinkType> = [
+    { href: '/', label: 'Overview', exact: true },
     { href: '/files', label: 'Files' },
-    { href: '/notifications', label: 'Notifications' },
+    // { href: '/notifications', label: 'Notifications' },
   ]
+
+  const isActiveLink = (navLink: NavLinkType) => {
+    if (navLink.exact) {
+      return pathName === navLink.href
+    }
+
+    return pathName.startsWith(navLink.href)
+  }
   
   return (
     <nav
@@ -26,8 +40,8 @@ export function MainNav({
         <Link
           key={navLink.href}
           href={navLink.href}
-          className={cn("text-sm font-medium text-muted-foreground transition-colors hover:text-primary", {
-            'text-foreground': pathName === navLink.href
+          className={cn("text-sm font-medium text-primary-muted transition-colors hover:text-primary-foreground", {
+            'text-secondary hover:text-secondary': isActiveLink(navLink),
           })}
         >
           {navLink.label}

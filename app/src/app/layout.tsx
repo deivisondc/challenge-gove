@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { MainNav } from "@/components/MainNav";
+import Image from "next/image";
+
+import GoveLogo from '@/assets/gove.png'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,13 +21,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <header className="flex h-16 px-4 items-center border-b">
+        <header className="flex h-16 px-8 items-center border-b bg-primary gap-8">
+          <Image
+            src={GoveLogo}
+            alt="Gove Logo"
+            width={80}
+          />
           <MainNav className="mx-6" />
         </header>
 
-        <main className="flex flex-col px-12 py-8">
-          {children}
-        </main>
+        <div className="flex justify-center">
+          <main className="flex flex-col flex-1 px-12 py-8 max-w-[1280px]">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );
