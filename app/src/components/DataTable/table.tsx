@@ -2,15 +2,19 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { DataTablePagination } from "./pagination";
 import { ResponseType } from "@/types/ResponseType";
 
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
+  onPageChange: (page: number) => void
 } & ResponseType<TData>
 
 const DataTable = <TData, TValue>({ 
   data, 
   columns,
+  onPageChange,
+  ...paginationProps
 }: DataTableProps<TData, TValue>) => {
 
   const table = useReactTable({
@@ -61,6 +65,8 @@ const DataTable = <TData, TValue>({
             )}
           </TableBody>
       </Table>
+
+      {table.getRowModel().rows?.length ? <DataTablePagination {...paginationProps} onPageChange={onPageChange} /> : null}
     </>
   );
 };

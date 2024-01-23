@@ -44,7 +44,7 @@ const Table = <TData, TValue>({ description, onRefresh, ...props }: TableProps<T
         </Button>
       </div>
       <div className="rounded-xl border p-4 w-full overflow-auto">
-        <DataTable {...props} data={props.data} />
+        <DataTable {...props} data={props.data} onPageChange={onRefresh} />
       </div>
     </div>
   );
