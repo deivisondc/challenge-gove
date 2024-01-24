@@ -42,13 +42,13 @@ export default function NotificationsTable({ fileImportId }: NotificationTablePr
   const columns = getColumns({ fetchNotifications })
 
   return (
-    <ExceptionBoundary error={error}>
+    <ExceptionBoundary error={error} asChild>
       {response ? (
         <Table
           title="Notifications"
           columns={columns}
           onRefresh={fetchNotifications}
-          // filterComponent={<NotificationsTableFilter setFilter={setFilterQueryParams} />}
+          filterComponent={<NotificationsTableFilter setFilter={setFilterQueryParams} />}
           {...response}
         />
       ) : <TableSkeleton hasFilter error={error} />}

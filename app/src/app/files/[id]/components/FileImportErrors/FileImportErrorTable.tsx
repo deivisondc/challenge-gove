@@ -38,7 +38,7 @@ export default function FileImportErrorsTable({ fileImportId }: NotificationTabl
   }, [fetchFiles])
 
   return (
-    <ExceptionBoundary error={error}>
+    <ExceptionBoundary error={error} asChild>
       {response ? (
         <Table title="Errors" columns={columns} {...response} onRefresh={fetchFiles}/>
       ) : <TableSkeleton error={error} />}
