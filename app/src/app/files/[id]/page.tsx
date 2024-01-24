@@ -1,3 +1,5 @@
+'use client'
+
 import { PageTitle } from "@/components/PageTitle";
 import { FileImportType } from "@/types/FileImportType";
 import NotificationsTable from "./components/Notifications/NotificationsTable";
@@ -6,7 +8,8 @@ import StatusCard from "./components/StatusCard";
 import { format } from "date-fns";
 import { ExceptionBoundary } from "@/components/ExceptionBoundary";
 import { apiFetch } from "@/service/api";
-import { TableSkeleton } from "@/components/DataTable/Skeleton";
+import { useCallback, useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type FileImportDetailsProps = {
   params: {
@@ -14,15 +17,31 @@ type FileImportDetailsProps = {
   }
 }
 
-export default async function FileImportDetails({ params }: FileImportDetailsProps) {
-  let response, error = '';
-  try {
-    response = await apiFetch<FileImportType>({ resource: `/files/${params.id}` })
-  } catch (err) {
-    if (err instanceof Error) {
-      error = err.message
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+export default function FileImportDetails({ params }: FileImportDetailsProps) {
+  const [response, setResponse] = useState<FileImportType>();
+  const [error, setError] = useState('');
+  
+  const fetchFileData = useCallback(async (page = 1) => {
+    try {
+      const data = await apiFetch<FileImportType>({
+        resource: `/files/${params.id}`
+      })
+
+      setResponse(data)
+      setError('')
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      }
     }
-  }
+  }, [params.id])
+
+  useEffect(() => {
+    fetchFileData()
+  }, [fetchFileData])
 
   return (
     <>
@@ -35,16 +54,17 @@ export default async function FileImportDetails({ params }: FileImportDetailsPro
       <ExceptionBoundary error={error}>
         <>
           <p className="mt-1 text-gray-500 text-sm">Filename: {!response ? '...' : `${response.filename} - ${format(response.created_at, 'yyyy-MM-dd - HH:mm:ss')}`}</p>
-          {response && (
+          {response ? (
             <>
               <StatusCard status={response.status} />
               
-              <NotificationsTable fileImportId={params.id} />
-              <FileImportErrorsTable fileImportId={params.id} />
             </>
-            )}
+            ) : <Skeleton className="w-[400px] h-[78px] my-2 p-4 rounded-lg" />}
         </>
       </ExceptionBoundary>
+
+      <NotificationsTable fileImportId={params.id} />
+      <FileImportErrorsTable fileImportId={params.id} />
 
     </>
   )
