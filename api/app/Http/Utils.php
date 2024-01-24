@@ -2,8 +2,21 @@
 
 namespace App\Http;
 
+use DateTime;
+
 class Utils
 {
+    public static function parseDate(string $date): DateTime
+    {
+        $formattedDate = DateTime::createFromFormat('Y-m-d', $date);
+
+        if ($formattedDate == false) {
+            throw new \Exception('Invalid date value');
+        }
+
+        return $formattedDate;
+    }
+
     public static function formatPaginationLinks($collection)
     {
         $links = $collection['links'];

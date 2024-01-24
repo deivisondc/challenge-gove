@@ -14,12 +14,11 @@ use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use App\Enums\NotificationStatus;
+use App\Http\Utils;
 use App\Models\FileImport;
 use App\Models\FileImportError;
 use App\Services\FileImportService;
-use DateTime;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\ImportFailed;
 use PhpOffice\PhpSpreadsheet\Cell\StringValueBinder;
@@ -71,7 +70,7 @@ class ExcelImport extends StringValueBinder
                 }
 
                 $dateString = $rowScheduledFor;
-                $dateObject = DateTime::createFromFormat('Y-m-d', $dateString);
+                $dateObject = Utils::parseDate($dateString);
 
                 $notificationsToSave[] = [
                     "contact_id" => $contact->id,

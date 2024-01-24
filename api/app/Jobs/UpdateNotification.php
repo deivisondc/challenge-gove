@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\NotificationStatus;
+use App\Http\Utils;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use DateTime;
@@ -33,7 +34,7 @@ class UpdateNotification implements ShouldQueue
             return;
         }
 
-        $scheduledFor = DateTime::createFromFormat('Y-m-d', $this->notification->scheduled_for);
+        $scheduledFor = Utils::parseDate($this->notification->scheduled_for);
         if ($scheduledFor > new DateTime()) {
             return;
         }

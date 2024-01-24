@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Utils;
 use App\Models\FileImport;
 use App\Services\FileImportService;
 use DateTime;
@@ -20,15 +21,9 @@ class FileImportController extends Controller
         $formattedDate = '';
 
         if ($createdAt) {
-            $formattedDate = DateTime::createFromFormat('Y-m-d', $createdAt);
-
-            if ($formattedDate == false) {
-                return response()->json([
-                    'error' => 'Invalid value for query param "createdAt"'
-                ]);
-            }
+            $formattedDate = Utils::parseDate($createdAt);
+            $filter['createdAt'] = $formattedDate;
         }
-        $filter['createdAt'] = $formattedDate;
 
         $fileImports = $this->service->getAll($filter);
 

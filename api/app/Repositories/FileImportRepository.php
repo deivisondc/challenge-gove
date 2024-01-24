@@ -18,7 +18,7 @@ class FileImportRepository implements FileImportRepositoryInterface
     public function filter(array $filter): array
     {
         $pageSize = $filter["pageSize"] ?? 10;
-        $createdAt = $filter["createdAt"] ?? 10;
+        $createdAt = $filter["createdAt"] ?? false;
 
         $fileImports = $this->model
             ->when($createdAt, function ($query) use ($createdAt) {

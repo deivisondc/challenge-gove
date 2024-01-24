@@ -36,9 +36,9 @@ class NotificationController extends Controller
     public function updateScheduledFor(Notification $notification, Request $request)
     {
         $scheduled_for = $request->json()->get('scheduled_for');
-        $formattedDate = DateTime::createFromFormat('Y-m-d', $scheduled_for);
+        $formattedDate = Utils::parseDate($scheduled_for);
 
-        $fieldsToUpdate = UpdateNotificationDTO::make($formattedDate, NotificationStatus::IDLE);
+        $fieldsToUpdate = UpdateNotificationDTO::make($formattedDate->format('Y-m-d'), NotificationStatus::IDLE);
         $notification = $this->service->update($notification, $fieldsToUpdate);
 
         return response()->json($notification);
