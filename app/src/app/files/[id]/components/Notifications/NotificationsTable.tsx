@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { NotificationsTableFilter } from "./NotificationsTableFilter";
 import { apiFetch } from "@/service/api";
 import { ExceptionBoundary } from "@/components/ExceptionBoundary";
+import { TableSkeleton } from "@/components/DataTable/Skeleton";
 
 type NotificationTableProps = {
   fileImportId?: number
@@ -47,10 +48,10 @@ export default function NotificationsTable({ fileImportId }: NotificationTablePr
           title="Notifications"
           columns={columns}
           onRefresh={fetchNotifications}
-          filterComponent={<NotificationsTableFilter setFilter={setFilterQueryParams} />}
+          // filterComponent={<NotificationsTableFilter setFilter={setFilterQueryParams} />}
           {...response}
         />
-      ) : 'Loading'}
+      ) : <TableSkeleton hasFilter error={error} />}
     </ExceptionBoundary>
   )
 }

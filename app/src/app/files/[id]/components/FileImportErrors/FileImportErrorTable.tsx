@@ -7,6 +7,7 @@ import { FileImportErrorType } from "@/types/FileImportErrorType";
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/service/api";
 import { ExceptionBoundary } from "@/components/ExceptionBoundary";
+import { TableSkeleton } from "@/components/DataTable/Skeleton";
 
 type NotificationTableProps = {
   fileImportId?: number
@@ -40,7 +41,7 @@ export default function FileImportErrorsTable({ fileImportId }: NotificationTabl
     <ExceptionBoundary error={error}>
       {response ? (
         <Table title="Errors" columns={columns} {...response} onRefresh={fetchFiles}/>
-      ) : 'Loading'}
+      ) : <TableSkeleton error={error} />}
     </ExceptionBoundary>
   )
 }

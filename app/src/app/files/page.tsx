@@ -10,6 +10,7 @@ import { ResponseType } from "@/types/ResponseType";
 import { FileImportType } from "@/types/FileImportType";
 import { apiFetch } from "@/service/api";
 import { ExceptionBoundary } from "@/components/ExceptionBoundary";
+import { TableSkeleton } from "@/components/DataTable/Skeleton";
 
 export default function Files() {
   const { push } = useRouter()
@@ -52,14 +53,14 @@ export default function Files() {
         </div>
       </div>
 
-      <ExceptionBoundary error={error}>
+      <ExceptionBoundary error={error} asChild>
         {response ? (
-            <FileImportsTable
-            	onRowClick={onRowClick}
-            	fetchFiles={fetchFiles}
-            	{...response}
-            />
-        ) : 'Loading'}
+          <FileImportsTable
+            onRowClick={onRowClick}
+            fetchFiles={fetchFiles}
+            {...response}
+          />
+        ) : <TableSkeleton hasDescription error={error} />} 
       </ExceptionBoundary>
 
     </>

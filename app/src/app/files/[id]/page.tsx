@@ -6,6 +6,7 @@ import StatusCard from "./components/StatusCard";
 import { format } from "date-fns";
 import { ExceptionBoundary } from "@/components/ExceptionBoundary";
 import { apiFetch } from "@/service/api";
+import { TableSkeleton } from "@/components/DataTable/Skeleton";
 
 type FileImportDetailsProps = {
   params: {
@@ -34,7 +35,6 @@ export default async function FileImportDetails({ params }: FileImportDetailsPro
       <ExceptionBoundary error={error}>
         <>
           <p className="mt-1 text-gray-500 text-sm">Filename: {!response ? '...' : `${response.filename} - ${format(response.created_at, 'yyyy-MM-dd - HH:mm:ss')}`}</p>
-
           {response && (
             <>
               <StatusCard status={response.status} />
@@ -42,7 +42,7 @@ export default async function FileImportDetails({ params }: FileImportDetailsPro
               <NotificationsTable fileImportId={params.id} />
               <FileImportErrorsTable fileImportId={params.id} />
             </>
-          )}
+            )}
         </>
       </ExceptionBoundary>
 

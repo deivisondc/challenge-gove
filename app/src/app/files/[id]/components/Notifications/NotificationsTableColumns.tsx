@@ -101,9 +101,6 @@ export const getColumns = ({ fetchNotifications }: ColumnProps): ColumnDef<Notif
       }
 
       return <NotificationsTableActions notification={notification} onRetry={onRetry} onEdit={fetchNotifications} />
-      // return <Button variant="outline" size="sm">
-      //   <DotsVerticalIcon />
-      // </Button>
     }
   }
 ]

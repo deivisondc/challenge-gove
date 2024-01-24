@@ -52,7 +52,7 @@ const NotificationEditDialog = ({ notification, onEdit }: NotificationEditDialog
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center gap-2">
           <Pencil1Icon />
           <span className="sr-only lg:not-sr-only">Edit</span>
