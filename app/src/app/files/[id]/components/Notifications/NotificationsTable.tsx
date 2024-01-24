@@ -6,6 +6,8 @@ import { ResponseType } from "@/types/ResponseType";
 import { NotificationsType } from "@/types/NotificationsType";
 import { useCallback, useEffect, useState } from "react";
 import { NotificationsTableFilter } from "./NotificationsTableFilter";
+import { apiFetch } from "@/service/api";
+import { ExceptionBoundary } from "@/components/ExceptionBoundary";
 
 type NotificationTableProps = {
   fileImportId?: number
@@ -13,15 +15,23 @@ type NotificationTableProps = {
 
 export default function NotificationsTable({ fileImportId }: NotificationTableProps) {
   const [response, setResponse] = useState<ResponseType<NotificationsType>>()
+  const [error, setError] = useState('')
   const [filterQueryParams, setFilterQueryParams] = useState('');
   
   const fetchNotifications = useCallback(async (page = 1) => {
-    const dataRaw = await fetch(`http://localhost:8000/api/files/${fileImportId}/notifications?page=${page}${filterQueryParams}`, {
-      cache: 'no-cache'
-    });
-    const data = (await dataRaw.json()) as ResponseType<NotificationsType>
+    try {
+      const data = await apiFetch<ResponseType<NotificationsType>>({
+        resource: `/files/${fileImportId}/notifications`,
+        queryParams: `page=${page}${filterQueryParams}`
+      })
 
-    setResponse(data)
+      setResponse(data)
+      setError('')
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      }
+    }
   }, [fileImportId, filterQueryParams])
 
   useEffect(() => {
@@ -30,15 +40,17 @@ export default function NotificationsTable({ fileImportId }: NotificationTablePr
 
   const columns = getColumns({ fetchNotifications })
 
-  if (!response) {
-    return 'Loading'
-  }
-
-  return <Table
-  	title="Notifications"
-  	columns={columns}
-  	onRefresh={fetchNotifications}
-    filterComponent={<NotificationsTableFilter setFilter={setFilterQueryParams} />}
-  	{...response}
-  />
+  return (
+    <ExceptionBoundary error={error}>
+      {response ? (
+        <Table
+          title="Notifications"
+          columns={columns}
+          onRefresh={fetchNotifications}
+          filterComponent={<NotificationsTableFilter setFilter={setFilterQueryParams} />}
+          {...response}
+        />
+      ) : 'Loading'}
+    </ExceptionBoundary>
+  )
 }

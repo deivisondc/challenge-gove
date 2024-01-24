@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/service/api";
 import { SymbolIcon, UploadIcon } from "@radix-ui/react-icons";
 import { useRef, useState } from "react";
 
@@ -12,6 +13,7 @@ type UploadButtonProps = {
 
 const UploadButton = ({ onSuccess }: UploadButtonProps) => {
   const [status, setStatus] = useState<Status>('IDLE');
+  const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isUploading = status === 'UPLOADING'
@@ -22,26 +24,30 @@ const UploadButton = ({ onSuccess }: UploadButtonProps) => {
 
   async function onFileChanged() {
     if (inputRef.current && inputRef.current.files) {
-      const file = inputRef.current.files[0]
+      try {
+        const file = inputRef.current.files[0]
 
-      const formData = new FormData();
-      formData.append('file', file)
+        const formData = new FormData();
+        formData.append('file', file)
 
-      setStatus('UPLOADING')
-      const rawResponse = await fetch('http://localhost:8000/api/files/import', {
-        method: 'POST',
-        body: formData
-      })
+        setStatus('UPLOADING')
+        
+        await apiFetch({
+          resource: '/files/import',
+          method: 'POST',
+          body: formData
+        })
 
-      if (rawResponse.ok) {
-        onSuccess()
-      } else {
-        const response = await rawResponse.json();
-        console.error(response)
+        onSuccess() 
+        setError('')
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message)
+        }
+      } finally {
+        setStatus('IDLE')
+        inputRef.current.value = ''
       }
-
-      setStatus('IDLE')
-      inputRef.current.value = ''
     }
   }
 

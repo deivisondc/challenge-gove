@@ -5,6 +5,8 @@ import { columns } from "./FileImportErrorTableColumns";
 import { ResponseType } from "@/types/ResponseType";
 import { FileImportErrorType } from "@/types/FileImportErrorType";
 import { useCallback, useEffect, useState } from "react";
+import { apiFetch } from "@/service/api";
+import { ExceptionBoundary } from "@/components/ExceptionBoundary";
 
 type NotificationTableProps = {
   fileImportId?: number
@@ -12,21 +14,33 @@ type NotificationTableProps = {
 
 export default function FileImportErrorsTable({ fileImportId }: NotificationTableProps) {
   const [response, setResponse] = useState<ResponseType<FileImportErrorType>>()
+  const [error, setError] = useState('');
 
   const fetchFiles = useCallback(async (page = 1) => {
-    const dataRaw = await fetch(`http://localhost:8000/api/files/${fileImportId}/errors?page=${page}`);
-    const data = (await dataRaw.json()) as ResponseType<FileImportErrorType>
+    try {
+      const data = await apiFetch<ResponseType<FileImportErrorType>>({
+        resource: `/files/${fileImportId}/errors`,
+        queryParams: `page=${page}`
+      })
 
-    setResponse(data)
+      setResponse(data)
+      setError('')
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      }
+    }
   }, [fileImportId])
 
   useEffect(() => {
     fetchFiles()
   }, [fetchFiles])
 
-  if (!response) {
-    return 'Loading zxcv'
-  }
-
-  return <Table title="Errors" columns={columns} {...response} onRefresh={fetchFiles}/>
+  return (
+    <ExceptionBoundary error={error}>
+      {response ? (
+        <Table title="Errors" columns={columns} {...response} onRefresh={fetchFiles}/>
+      ) : 'Loading'}
+    </ExceptionBoundary>
+  )
 }

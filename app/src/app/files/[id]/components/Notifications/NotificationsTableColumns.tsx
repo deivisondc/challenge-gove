@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { NotificationsTableActions } from "./NotificationsTableActions"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { apiFetch } from "@/service/api"
 
 type ColumnProps = {
   fetchNotifications: () => Promise<void>
@@ -81,13 +82,22 @@ export const getColumns = ({ fetchNotifications }: ColumnProps): ColumnDef<Notif
     id: "actions",
     cell: ({ row }) => {
       const notification = row.original
+      let error = ''
       
       async function onRetry() {
-        await fetch(`http://localhost:8000/api/notifications/${notification.id}/retry`, {
-          method: 'PUT'
-        })
-
-        fetchNotifications()
+        try {
+          await apiFetch({
+            resource: `/notifications/${notification.id}/retry`,
+            method: 'PUT'
+          })
+  
+          fetchNotifications()
+          error = ''
+        } catch (err) {
+          if (err instanceof Error) {
+            error = err.message
+          }
+        }
       }
 
       return <NotificationsTableActions notification={notification} onRetry={onRetry} onEdit={fetchNotifications} />

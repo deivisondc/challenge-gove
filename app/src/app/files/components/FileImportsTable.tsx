@@ -13,6 +13,7 @@ type FileImportsTableProps = {
 export default function FileImportsTable({ onRowClick, fetchFiles, ...props }: FileImportsTableProps) {  
   return (
     <Table
+      description="Select a file to see more details."
       columns={columns}
       onRowClick={onRowClick}
       onRefresh={fetchFiles}

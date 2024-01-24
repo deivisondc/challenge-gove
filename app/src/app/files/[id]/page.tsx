@@ -4,6 +4,8 @@ import NotificationsTable from "./components/Notifications/NotificationsTable";
 import FileImportErrorsTable from "./components/FileImportErrors/FileImportErrorTable";
 import StatusCard from "./components/StatusCard";
 import { format } from "date-fns";
+import { ExceptionBoundary } from "@/components/ExceptionBoundary";
+import { apiFetch } from "@/service/api";
 
 type FileImportDetailsProps = {
   params: {
@@ -12,26 +14,38 @@ type FileImportDetailsProps = {
 }
 
 export default async function FileImportDetails({ params }: FileImportDetailsProps) {
-  const dataRaw = await fetch(`http://localhost:8000/api/files/${params.id}`);
-  const response = (await dataRaw.json()) as FileImportType;
+  let response, error = '';
+  try {
+    response = await apiFetch<FileImportType>({ resource: `/files/${params.id}` })
+  } catch (err) {
+    if (err instanceof Error) {
+      error = err.message
+    }
+  }
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <div className="flex gap-2 items-center">
-          <PageTitle backButtonHref="/files">
-            Files
-          </PageTitle>
-        </div>
-
-        <p className="text-gray-500 text-sm">Filename: {!response ? '...' : `${response.filename} - ${format(response.created_at, 'yyyy-MM-dd - HH:mm:ss')}`}</p>
-
+      <div className="flex gap-2 items-center">
+        <PageTitle backButtonHref="/files">
+          Files
+        </PageTitle>
       </div>
 
-      <StatusCard status={response.status} />
-      
-      <NotificationsTable fileImportId={params.id} />
-      <FileImportErrorsTable fileImportId={params.id} />
+      <ExceptionBoundary error={error}>
+        <>
+          <p className="mt-1 text-gray-500 text-sm">Filename: {!response ? '...' : `${response.filename} - ${format(response.created_at, 'yyyy-MM-dd - HH:mm:ss')}`}</p>
+
+          {response && (
+            <>
+              <StatusCard status={response.status} />
+              
+              <NotificationsTable fileImportId={params.id} />
+              <FileImportErrorsTable fileImportId={params.id} />
+            </>
+          )}
+        </>
+      </ExceptionBoundary>
+
     </>
   )
 }

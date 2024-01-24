@@ -8,16 +8,28 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ResponseType } from "@/types/ResponseType";
 import { FileImportType } from "@/types/FileImportType";
+import { apiFetch } from "@/service/api";
+import { ExceptionBoundary } from "@/components/ExceptionBoundary";
 
 export default function Files() {
   const { push } = useRouter()
   const [response, setResponse] = useState<ResponseType<FileImportType>>()
+  const [error, setError] = useState('')
 
   const fetchFiles = useCallback(async (page = 1) => {
-    const dataRaw = await fetch(`http://localhost:8000/api/files?page=${page}`);
-    const data = (await dataRaw.json()) as ResponseType<FileImportType>
+    try {
+      const data = await apiFetch<ResponseType<FileImportType>>({
+        resource: '/files',
+        queryParams: `page=${page}`
+      })
 
-    setResponse(data)
+      setResponse(data)
+      setError('')
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      }
+    }
   }, [])
 
   useEffect(() => {
@@ -40,9 +52,15 @@ export default function Files() {
         </div>
       </div>
 
-      {response ? (
-          <FileImportsTable onRowClick={onRowClick} fetchFiles={fetchFiles} {...response} />
-      ) : 'Loading'}
+      <ExceptionBoundary error={error}>
+        {response ? (
+            <FileImportsTable
+            	onRowClick={onRowClick}
+            	fetchFiles={fetchFiles}
+            	{...response}
+            />
+        ) : 'Loading'}
+      </ExceptionBoundary>
 
     </>
   );

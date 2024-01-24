@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns"
 import {
   Dialog,
   DialogClose,
@@ -12,13 +11,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label";
 import { NotificationsType } from "@/types/NotificationsType";
-import { CalendarIcon, Cross1Icon, PaperPlaneIcon, Pencil1Icon } from "@radix-ui/react-icons";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { Cross1Icon} from "@radix-ui/react-icons";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { apiFetch } from "@/service/api";
 
 type NotificationCancelDialogProps = {
   notification: NotificationsType
@@ -26,13 +22,21 @@ type NotificationCancelDialogProps = {
 }
 
 const NotificationCancelDialog = ({ notification, onEdit }: NotificationCancelDialogProps) => {
+  const [error, setError] = useState('');
 
-  function handleSubmit() {
-    fetch(`http://localhost:8000/api/notifications/${notification.id}/cancel`, {
-      method: 'PUT',
-    }).finally(() => {
+  async function handleSubmit() {
+    try {
+      await apiFetch({
+        resource: `/notifications/${notification.id}/cancel`,
+        method: 'PUT',
+      })
+
       onEdit()
-    })
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      }
+    }
   }
 
   return (

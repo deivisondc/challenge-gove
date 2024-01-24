@@ -19,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/service/api";
 
 type NotificationEditDialogProps = {
   notification: NotificationsType
@@ -27,19 +28,25 @@ type NotificationEditDialogProps = {
 
 const NotificationEditDialog = ({ notification, onEdit }: NotificationEditDialogProps) => {
   const [date, setDate] = useState<Date>()
+  const [error, setError] = useState('')
 
-  function handleSubmit() {
-    if (date) {
-      const formattedDate = format(date, 'yyyy-MM-dd')
-
-      fetch(`http://localhost:8000/api/notifications/${notification.id}/update-date`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          "scheduled_for": formattedDate
+  async function handleSubmit() {
+    try {
+      if (date) {
+        const formattedDate = format(date, 'yyyy-MM-dd')
+  
+        await apiFetch({
+          resource: `/notifications/${notification.id}/update-date`,
+          method: 'PUT',
+          body: { "scheduled_for": formattedDate }
         })
-      }).finally(() => {
+
         onEdit()
-      })
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      }
     }
   }
 
