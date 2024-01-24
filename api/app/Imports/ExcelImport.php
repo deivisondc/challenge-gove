@@ -35,13 +35,7 @@ class ExcelImport extends StringValueBinder
 
     public function array(array $rows)
     {
-        if (count($rows) == 0) {
-            $this->setStatusOnFileImport(FileImportStatus::ERROR);
-        }
-
-        if ($this->fileImport->status == FileImportStatus::QUEUED->name) {
-            $this->setStatusOnFileImport(FileImportStatus::PROCESSING);
-        }
+        $this->initializeFileImportProcess();
 
         $savedContacts = [];
 
@@ -116,6 +110,21 @@ class ExcelImport extends StringValueBinder
         );
 
         $this->service->updateStatus($updateFileImportDTO);
+    }
+
+    private function initializeFileImportProcess(int $countRows) {
+        $status = FileImportStatus::PROCESSING;
+
+        if ($countRows == 0) {
+            $status = FileImportStatus::ERROR;
+        }
+
+        $dto = UpdateFileImportDTO::make(
+            $this->fileImport->id,
+            $this->fileImport->filename,
+            $status
+        );
+        $this->service->updateStatus($dto);
     }
 
     private function validateRowOrFail($rowName, $rowContact, $rowScheduledFor): array {
