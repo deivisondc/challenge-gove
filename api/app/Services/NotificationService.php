@@ -59,7 +59,7 @@ class NotificationService
         return true;
     }
 
-    public function updateStatusInBatch(array $notifications, NotificationStatus $status)
+    public function updateStatusInBatch($notifications, NotificationStatus $status)
     {
         $notificationsToSave = [];
 

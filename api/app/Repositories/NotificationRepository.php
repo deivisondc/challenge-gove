@@ -4,15 +4,13 @@ namespace App\Repositories;
 
 use App\DTO\UpdateNotificationDTO;
 use App\Enums\NotificationStatus;
-use App\Models\FileImport;
-use App\Models\FileImportError;
 use App\Models\Notification;
 use App\Repositories\Interfaces\NotificationRepositoryInterface;
 
 class NotificationRepository implements NotificationRepositoryInterface
 {
     public function __construct(
-        protected FileImport $model,
+        protected Notification $model,
     ) {}
 
     public function filter(array $filter): array
