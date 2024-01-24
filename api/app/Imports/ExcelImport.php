@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\DTO\UpdateFileImportDTO;
 use App\Enums\FileImportCellError;
 use App\Enums\FileImportStatus;
 use App\Models\Contact;
@@ -15,6 +16,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use App\Enums\NotificationStatus;
 use App\Models\FileImport;
 use App\Models\FileImportError;
+use App\Services\FileImportService;
 use DateTime;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +30,8 @@ class ExcelImport extends StringValueBinder
     use Importable, RemembersChunkOffset;
 
     public function __construct(
-        protected FileImport $fileImport
+        protected FileImport $fileImport,
+        protected FileImportService $service,
     ) {}
 
     public function array(array $rows)
@@ -107,8 +110,13 @@ class ExcelImport extends StringValueBinder
     }
 
     private function setStatusOnFileImport(FileImportStatus $status) {
-        $this->fileImport->status = $status->name;
-        $this->fileImport->save();
+        $updateFileImportDTO = UpdateFileImportDTO::make(
+            $this->fileImport->id,
+            $this->fileImport->filename,
+            $status,
+        );
+
+        $this->service->updateStatus($updateFileImportDTO);
     }
 
     private function validateRowOrFail($rowName, $rowContact, $rowScheduledFor): array {

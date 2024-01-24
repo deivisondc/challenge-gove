@@ -2,10 +2,10 @@
 
 namespace App\Jobs;
 
+use App\DTO\UpdateFileImportDTO;
 use App\Enums\FileImportStatus;
 use App\Models\FileImport;
-use App\Models\FileImportError;
-use App\Models\Notification;
+use App\Services\FileImportService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,7 +20,8 @@ class UpdateFileImportStatus implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private FileImport $fileImport
+        protected FileImport $fileImport,
+        protected FileImportService $service,
     )
     {
         //
@@ -37,13 +38,20 @@ class UpdateFileImportStatus implements ShouldQueue
 
         $countFileImportErrors = $this->fileImport->fileImportErrors->count();
 
+        $status = '';
+
         if ($countFileImportErrors > 0) {
-            $this->fileImport->status = FileImportStatus::WARNING->name;
+            $status = FileImportStatus::WARNING;
         } else {
-            $this->fileImport->status = FileImportStatus::SUCCESS->name;
+            $status = FileImportStatus::SUCCESS;
         }
 
-        $this->fileImport->save();
+        $dto = UpdateFileImportDTO::make(
+            $this->fileImport->id,
+            $this->fileImport->filename,
+            $status
+        );
+        $this->service->updateStatus($dto);
 
         SendNotification::dispatch()->onQueue('notifications');
     }

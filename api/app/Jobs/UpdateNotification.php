@@ -38,17 +38,13 @@ class UpdateNotification implements ShouldQueue
             return;
         }
 
-        $this->notification->status = NotificationStatus::QUEUED->name;
-        $this->notification->save();
+        $notificationService->updateStatus($this->notification, NotificationStatus::QUEUED);
 
         try {
             $notificationService->send($this->notification->contact, 'MOCK MESSAGE');
-
-            $this->notification->status = NotificationStatus::SUCCESS->name;
+            $notificationService->updateStatus($this->notification, NotificationStatus::SUCCESS);
         } catch (\Exception $e) {
-            $this->notification->status = NotificationStatus::ERROR->name;
-        } finally {
-            $this->notification->save();
+            $notificationService->updateStatus($this->notification, NotificationStatus::ERROR);
         }
 
     }
