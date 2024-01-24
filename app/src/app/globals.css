@@ -76,4 +76,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .skeleton {
+    @apply bg-gray-300;
+  }
 }
