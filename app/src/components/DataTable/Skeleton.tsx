@@ -1,8 +1,4 @@
-import { cn } from "@/lib/utils";
-import { SymbolIcon } from "@radix-ui/react-icons";
-import { Button } from "react-day-picker";
 import { Skeleton } from "../ui/skeleton";
-import { DataTable } from "./table";
 import React from "react";
 
 type TableSkeletonProps = {
@@ -20,7 +16,6 @@ const TableSkeleton = ({ hasDescription, hasFilter, error }: TableSkeletonProps)
         ) : (
           hasDescription ? (
             <Skeleton className="h-3.5 w-[250px]"/>
-            // <p className="text-sm text-gray-500">{description}</p>
           ) : (
             <Skeleton className="h-5 w-[250px]"/>
           )
@@ -66,8 +61,6 @@ const TableSkeleton = ({ hasDescription, hasFilter, error }: TableSkeletonProps)
             </div>
           </div>
         </div>
-        {/* {filterComponent}
-        <DataTable {...props} data={props.data} onPageChange={onRefresh} /> */}
       </div>
     </div>
   );

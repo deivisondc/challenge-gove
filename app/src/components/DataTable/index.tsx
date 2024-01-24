@@ -4,7 +4,7 @@ import { SymbolIcon } from "@radix-ui/react-icons";
 import { Button } from "../ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ResponseType } from "@/types/ResponseType";
-import { DataTable } from "./table";
+import { Structure } from "./Structure";
 import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +52,7 @@ const Table = <TData, TValue>({ title, description, onRefresh, filterComponent, 
       </div>
       <div className="rounded-xl border p-4 w-full overflow-auto">
         {filterComponent}
-        <DataTable {...props} data={props.data} onPageChange={onRefresh} />
+        <Structure {...props} data={props.data} onPageChange={onRefresh} />
       </div>
     </div>
   );

@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 import { ResponseType } from "@/types/ResponseType";
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from "@radix-ui/react-icons";
 
-type DataTablePaginationProps<T> = {
+type PaginationProps<T> = {
   onPageChange: (page: number) => void
 } & Omit<ResponseType<T>, 'data'>
 
-const DataTablePagination = <T,>({ onPageChange, from, to, total, current_page, last_page, links }: DataTablePaginationProps<T>) => {
+const Pagination = <T,>({ onPageChange, from, to, total, current_page, last_page, links }: PaginationProps<T>) => {
   const canGoPreviousPage = current_page >= 2
   const canGoNextPage = current_page <= last_page - 1
 
@@ -76,4 +76,4 @@ const DataTablePagination = <T,>({ onPageChange, from, to, total, current_page, 
   );
 };
 
-export { DataTablePagination };
+export { Pagination };

@@ -2,22 +2,22 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { DataTablePagination } from "./pagination";
+import { Pagination } from "./Pagination";
 import { ResponseType } from "@/types/ResponseType";
 
-type DataTableProps<TData, TValue> = {
+type StructureProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   onRowClick?: (itemId: number) => void
   onPageChange: (page: number) => void
 } & ResponseType<TData>
 
-const DataTable = <TData, TValue>({ 
+const Structure = <TData, TValue>({ 
   data, 
   columns,
   onRowClick,
   onPageChange,
   ...paginationProps
-}: DataTableProps<TData, TValue>) => {
+}: StructureProps<TData, TValue>) => {
 
   const table = useReactTable({
       columns,
@@ -70,9 +70,9 @@ const DataTable = <TData, TValue>({
           </TableBody>
       </Table>
 
-      {table.getRowModel().rows?.length ? <DataTablePagination {...paginationProps} onPageChange={onPageChange} /> : null}
+      {table.getRowModel().rows?.length ? <Pagination {...paginationProps} onPageChange={onPageChange} /> : null}
     </>
   );
 };
 
-export { DataTable };
+export { Structure };
