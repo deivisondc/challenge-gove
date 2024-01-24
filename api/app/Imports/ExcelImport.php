@@ -35,7 +35,7 @@ class ExcelImport extends StringValueBinder
 
     public function array(array $rows)
     {
-        $this->initializeFileImportProcess();
+        $this->initializeFileImportProcess(count($rows));
 
         $savedContacts = [];
 
