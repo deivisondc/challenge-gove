@@ -4,15 +4,44 @@ services:
     laravel:
         container_name: gove-api
         image: gove-api
-        build: ./api
+        build:
+            context: ./api/
+            dockerfile: Dockerfile
+        volumes:
+            - ./api:/var/www/html
+        working_dir: /var/www/html
         ports:
             - "8000:8000"
         env_file:
             - ./api/.env
-        volumes:
-            - ./api:/var/www/html
+        networks:
+            - laravel-network
+
+    queue:
+        image: gove-api
+        container_name: gove-api-queue
+        restart: always
+        working_dir: /var/www/html
+        command: php artisan queue:work --queue=default,notifications
         depends_on:
-            - db
+            - laravel
+        volumes:
+            - ./api/:/var/www/html
+        networks:
+            - laravel-network
+
+    scheduler:
+        image: gove-api
+        container_name: gove-api-scheduler
+        restart: always
+        working_dir: /var/www/html
+        command: php artisan schedule:work
+        depends_on:
+            - laravel
+        volumes:
+            - ./api/:/var/www/html
+        networks:
+            - laravel-network
 
     db:
         container_name: db
@@ -23,8 +52,8 @@ services:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
             POSTGRES_DB: postgres
-        volumes:
-            - dbdata:/var/lib/postgresql/data
+        networks:
+            - laravel-network
 
     app:
         container_name: gove-app
@@ -40,3 +69,6 @@ services:
             - "3000:3000"
 volumes:
     dbdata: {}
+
+networks:
+  laravel-network:
