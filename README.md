@@ -34,20 +34,26 @@ git clone git@github.com:deivisondc/challenge-gove.git
 cd challenge-gove
 ```
 
-3\. Execute o seguinte comando para construir e iniciar os contêineres:
+2\. Copie os arquivos .env.example e renomeie-os conforme o projeto:
+
+```bash
+cp ./api/.env.example ./api/.env && cp ./app/.env.example ./app/.env.local
+```
+
+4\. Execute o seguinte comando para construir e iniciar os contêineres:
 
 ```bash
 docker compose up -d --build
 ```
 Este comando utilizará as configurações do arquivo docker-compose.yml para criar os contêineres necessários.
 
-4\. Aguarde até que os contêineres estejam prontos. Após a conclusão, os serviços dos contêineres estarão disparando vários erros. Isso é porque nosso banco de dados está vazio, sem nenhuma tabela. Então precisamos executar as `migrations` com o comando:
+5\. Aguarde até que os contêineres estejam prontos. Após a conclusão, os serviços dos contêineres estarão disparando vários erros. Isso é porque nosso banco de dados está vazio, sem nenhuma tabela. Então precisamos executar as `migrations` com o comando:
 
 ```bash
 docker compose exec laravel php artisan migrate
 ```
 
-5\. Após rodar as `migrations`, você poderá acessar a aplicação em http://localhost:3000 para o front-end e http://localhost:8000/api para a API.
+6\. Após rodar as `migrations`, você poderá acessar a aplicação em http://localhost:3000 para o front-end e http://localhost:8000/api para a API.
 
 ## Configuração de Filas e Tarefas Assíncronas
 
