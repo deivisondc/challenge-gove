@@ -37,34 +37,29 @@ cd challenge-gove
 3\. Execute o seguinte comando para construir e iniciar os contêineres:
 
 ```bash
-docker-compose up --build
+docker compose up -d --build
 ```
 Este comando utilizará as configurações do arquivo docker-compose.yml para criar os contêineres necessários.
 
-4\. Aguarde até que os contêineres estejam prontos. Após a conclusão, você poderá acessar a aplicação em http://localhost:3000 para o front-end e http://localhost:8000 para a API.
+4\. Aguarde até que os contêineres estejam prontos. Após a conclusão, os serviços dos contêineres estarão disparando vários erros. Isso é porque nosso banco de dados está vazio, sem nenhuma tabela. Então precisamos executar as `migrations` com o comando:
+
+```bash
+docker compose exec laravel php artisan migrate
+```
+
+5\. Após rodar as `migrations`, você poderá acessar a aplicação em http://localhost:3000 para o front-end e http://localhost:8000/api para a API.
 
 ## Configuração de Filas e Tarefas Assíncronas
 
 As filas neste projeto foram configuradas utilizando o próprio driver do banco de dados por questões de simplicidade. No entanto, é importante observar que, dependendo do volume de tarefas assíncronas, outros drivers, como Redis ou RabbitMQ, devem ser considerados para um melhor desempenho.
 
-### Comandos do Terminal
-Para gerenciar as filas e tarefas assíncronas, execute os seguintes comandos dentro do terminal:
+### Filas "default" e "notifications":
 
-#### 1. Escutar Filas "default" e "notifications":
+O serviço `queue` gerenciado pelo Docker executa um comando ficará escutando as filas "default" e "notifications". A fila "default" é reservada apenas para a importação dos arquivos XLSX, enquanto a fila "notifications" é exclusiva para o processamento das notificações.
 
-Este comando ficará escutando as filas "default" e "notifications". A fila "default" é reservada apenas para a importação dos arquivos XLSX, enquanto a fila "notifications" é exclusiva para o processamento das notificações.
+### Task Scheduling Diariamente:
 
-```bash
-docker exec gove-api php artisan queue:work --queue=default,notifications
-```
-
-#### 2. Disparar Task Scheduling Diariamente:
-
-Este comando é utilizado para acionar o Task Scheduling e rodar a job diariamente, caso não haja nenhuma interação do usuário.
-
-```bash
-docker exec gove-api php artisan schedule:work
-```
+Já o serviço `scheduler` gerenciado pelo Docker, executa outro comando que é utilizado para acionar o Task Scheduling e rodar a job diariamente, caso não haja nenhuma interação do usuário.
 
 ## Desenvolvimento
 API (Laravel): Os arquivos da API Laravel estão localizados na pasta api. Clique [aqui](/api/README.md) para mais detalhes.
