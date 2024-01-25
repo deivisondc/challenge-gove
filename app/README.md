@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Frontend Next.js
 
-## Getting Started
+Frontend desenvolvido em Next.js, que utiliza App Router para navegação, Tailwind para estilização utilizando as cores temas da empresa e alguns componentes do repositório shadcn-ui, além de componentes próprios.
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Estrutura do Projeto
+```scss
+/app
+│   ... (outros arquivos e pastas)
+│
+└───src
+    └───app
+    │   │   page.tsx -- Dashboard (/)
+    │   │   layout.tsx
+    │   │
+    │   └───files
+    │       │   page.tsx -- Files (/files)
+    │       |   
+    │       └───components
+    |           | ... (específicos da página)
+    |       │   
+    │       └───[id]
+    │           │   page.tsx -- Detalhes (/files/123)
+    │           |   
+    │           └───components
+    |               | ... (específicos da página)
+    └───components
+    |   | ... (componentes genéricos)
+    |   |
+    │   └───ui (shadcn-ui)
+    │       │   ...
+    │
+    └───services
+    │   │   api.js
+    │
+    └───types
+    │   │   FileImportType.js
+    │   │   FileImportErrorType.js
+    │   │   NotificationsType.js
+    │   │   ...
+    │
+    └───assets
+        | Tempalte.xlsx
+        │   ... (arquivos estáticos)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Páginas Principais
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Dashboard (Não Finalizada)
+Para projetos futuros, adicionar gráficos e estatísticas sobre a utilização do sistema.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 2. Files
+Página onde é possível:
 
-## Learn More
+- Fazer o download de um arquivo XLSX template.
+- Fazer o upload dos arquivos XLSX que serão processados.
+- Visualizar uma tabela com os arquivos importados e algumas informações sobre eles.
+- Clicar em um dos itens da tabela para ver detalhes do arquivo importado.
+- Visualizar duas tabelas adicionais com as notificações e os erros gerados durante a importação.
 
-To learn more about Next.js, take a look at the following resources:
+#### 2.1 Tabela de Notificações
+Esta tabela mostra detalhes das notificações e permite algumas ações do usuário:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Edit**: Permite editar a data para quando está agendada a notificação. Ao mudar a data, o backend irá processar essa notificação imediatamente (caso não haja nada na fila). Processar pode significar não fazer nada porque foi agendado para o futuro, por exemplo.
+- **Retry**: Permite tentar processar novamente. Ao clicar, é enviado para o backend reprocesar a notificação imediatamente.
+- **Cancel**: Cancelar que uma notificação seja enviada. Esta opção só estará habilitada para registros que não foram processados ainda (status `IDLE` ou `QUEUED`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Componentes
 
-## Deploy on Vercel
+#### [Skeleton](src/components/DataTable/Skeleton.tsx)
+Enquanto não há dados nas tabelas, é apresentado um esqueleto (Skeleton) para proporcionar uma experiência de carregamento.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### [ExceptionBoundary](src/components/ExceptionBoundary/index.tsx)
+Caso haja algum erro durante a requisição dos dados, este componente apresenta o erro ao usuário.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Estrutura de Diretórios
+- **pages**: Contém as páginas principais da aplicação.
+- **pages/\*\*/components**: Contém componentes específicos da página.
+- **src/components**: Contém componentes genéricos da aplicação.
+- **src/components/ui**: Contém componentes do repositório shadcn-ui.
+- **src/services**: Contém uma abstração do fetch para evitar repetições digitando a URL base da API e tratamento de erros.
+- **src/types**: Contém os arquivos de tipagem utilizados no projeto.
+- **src/assets**: Contém arquivos estáticos, incluindo o template XLSX.
+
+## Execução via Docker
+O frontend será servido via Docker no container chamado gove-app. Certifique-se de ter executado os comandos descritos [aqui](../README.md#passos-para-execução)
+
+Acesse a aplicação em http://localhost:3000.
+
+Lembre-se de ajustar os comandos e configurações conforme necessário para o seu ambiente.
+
+## Melhorias futuras
+
+- [ ] Estatísticas na pagina Dashboard
+- [ ] ReactQuery para trabalhar com estados assíncronos
+- [ ] Storybook para documentar componentes
+- [ ] Testes unitários
