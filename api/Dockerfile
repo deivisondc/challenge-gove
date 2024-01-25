@@ -10,9 +10,6 @@ COPY . .
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# RUN touch test.php
-# RUN echo "<?php var_dump(extension_loaded('zip'));" >> test.php
-
-# CMD ["php", "test.php"]
+RUN cp .env.example .env
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
