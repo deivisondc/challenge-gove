@@ -9,20 +9,17 @@ Frontend desenvolvido em Next.js, que utiliza App Router para navegação, Tailw
 │
 └───src
     └───app
-    │   │   page.tsx -- Dashboard (/)
+    │   │   page.tsx -- Página principal (/)
     │   │   layout.tsx
     │   │
-    │   └───files
-    │       │   page.tsx -- Files (/files)
+    │   └───components
+    |       | ... (específicos da página)
+    |   │   
+    │   └───[id]
+    │       │   page.tsx -- Detalhes (/123)
     │       |   
     │       └───components
     |           | ... (específicos da página)
-    |       │   
-    │       └───[id]
-    │           │   page.tsx -- Detalhes (/files/123)
-    │           |   
-    │           └───components
-    |               | ... (específicos da página)
     └───components
     |   | ... (componentes genéricos)
     |   |
@@ -45,10 +42,7 @@ Frontend desenvolvido em Next.js, que utiliza App Router para navegação, Tailw
 
 ## Páginas Principais
 
-### 1. Dashboard (Não Finalizada)
-Para projetos futuros, adicionar gráficos e estatísticas sobre a utilização do sistema.
-
-### 2. Files
+### 1. Files
 Página onde é possível:
 
 - Fazer o download de um arquivo XLSX template.
@@ -57,7 +51,11 @@ Página onde é possível:
 - Clicar em um dos itens da tabela para ver detalhes do arquivo importado.
 - Visualizar duas tabelas adicionais com as notificações e os erros gerados durante a importação.
 
-#### 2.1 Tabela de Notificações
+### 2 Detalhes do arquivo
+Pagina onde é apresentado detalhes do arquivo como status, tabela de notificações e de erros (caso houver).
+
+#### 2.1 Tabela de notificações
+
 Esta tabela mostra detalhes das notificações e permite algumas ações do usuário:
 
 - **Edit**: Permite editar a data para quando está agendada a notificação. Ao mudar a data, o backend irá processar essa notificação imediatamente (caso não haja nada na fila). Processar pode significar não fazer nada porque foi agendado para o futuro, por exemplo.
@@ -90,7 +88,7 @@ Lembre-se de ajustar os comandos e configurações conforme necessário para o s
 
 ## Melhorias futuras
 
-- [ ] Estatísticas na pagina Dashboard
+- [ ] Criar página de Dashboard com estatísticas
 - [ ] ReactQuery para trabalhar com estados assíncronos
 - [ ] Storybook para documentar componentes
 - [ ] Testes unitários

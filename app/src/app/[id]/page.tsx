@@ -46,7 +46,7 @@ export default function FileImportDetails({ params }: FileImportDetailsProps) {
   return (
     <>
       <div className="flex gap-2 items-center">
-        <PageTitle backButtonHref="/files">
+        <PageTitle backButtonHref="/">
           Files
         </PageTitle>
       </div>

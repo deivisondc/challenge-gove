@@ -18,8 +18,7 @@ export function MainNav({
   const pathName = usePathname();
 
   const navLinks: Array<NavLinkType> = [
-    { href: '/', label: 'Overview', exact: true },
-    { href: '/files', label: 'Files' },
+    { href: '/', label: 'Files' },
   ]
 
   const isActiveLink = (navLink: NavLinkType) => {
