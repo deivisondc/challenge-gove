@@ -9,6 +9,7 @@ services:
             dockerfile: Dockerfile
         volumes:
             - ./api:/var/www/html
+            - /var/www/html/vendor
         working_dir: /var/www/html
         ports:
             - "8000:8000"
@@ -27,6 +28,7 @@ services:
             - laravel
         volumes:
             - ./api/:/var/www/html
+            - /var/www/html/vendor
         networks:
             - laravel-network
 
@@ -40,6 +42,7 @@ services:
             - laravel
         volumes:
             - ./api/:/var/www/html
+            - /var/www/html/vendor
         networks:
             - laravel-network
 
